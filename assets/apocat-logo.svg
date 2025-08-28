@@ -1,0 +1,54 @@
+<!-- APOCAT Logo SVG - Recreated from the provided image -->
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="#2F1B14" stroke="#8B4513" stroke-width="3"/>
+  
+  <!-- Cat head -->
+  <ellipse cx="100" cy="110" rx="45" ry="40" fill="#8B8B8B"/>
+  
+  <!-- Cat ears -->
+  <polygon points="70,75 85,50 95,75" fill="#8B8B8B"/>
+  <polygon points="105,75 115,50 130,75" fill="#8B8B8B"/>
+  <polygon points="75,70 85,55 90,70" fill="#FF6B47"/>
+  <polygon points="110,70 115,55 120,70" fill="#FF6B47"/>
+  
+  <!-- Goggles frame -->
+  <circle cx="85" cy="95" r="18" fill="none" stroke="#4A4A4A" stroke-width="4"/>
+  <circle cx="115" cy="95" r="18" fill="none" stroke="#4A4A4A" stroke-width="4"/>
+  
+  <!-- Goggle lenses -->
+  <circle cx="85" cy="95" r="15" fill="#FFD700" opacity="0.8"/>
+  <circle cx="115" cy="95" r="15" fill="#FFD700" opacity="0.8"/>
+  
+  <!-- Goggle reflections -->
+  <ellipse cx="82" cy="92" rx="8" ry="10" fill="#FFF" opacity="0.6"/>
+  <ellipse cx="112" cy="92" rx="8" ry="10" fill="#FFF" opacity="0.6"/>
+  
+  <!-- Goggle strap -->
+  <path d="M 67 95 Q 50 85 50 95 Q 50 105 67 95" fill="none" stroke="#654321" stroke-width="3"/>
+  <path d="M 133 95 Q 150 85 150 95 Q 150 105 133 95" fill="none" stroke="#654321" stroke-width="3"/>
+  
+  <!-- Cat eyes (behind goggles) -->
+  <circle cx="85" cy="105" r="8" fill="#00FF00"/>
+  <circle cx="115" cy="105" r="8" fill="#00FF00"/>
+  <ellipse cx="85" cy="105" rx="3" ry="6" fill="#000"/>
+  <ellipse cx="115" cy="105" rx="3" ry="6" fill="#000"/>
+  
+  <!-- Cat nose -->
+  <polygon points="100,115 95,120 105,120" fill="#FF6600"/>
+  
+  <!-- Cat mouth -->
+  <path d="M 100 122 Q 95 125 90 122" fill="none" stroke="#000" stroke-width="2"/>
+  <path d="M 100 122 Q 105 125 110 122" fill="none" stroke="#000" stroke-width="2"/>
+  
+  <!-- Whiskers -->
+  <line x1="65" y1="110" x2="80" y2="108" stroke="#000" stroke-width="2"/>
+  <line x1="65" y1="115" x2="80" y2="115" stroke="#000" stroke-width="2"/>
+  <line x1="120" y1="108" x2="135" y2="110" stroke="#000" stroke-width="2"/>
+  <line x1="120" y1="115" x2="135" y2="115" stroke="#000" stroke-width="2"/>
+  
+  <!-- Apocalyptic details -->
+  <circle cx="60" cy="60" r="8" fill="#FF6600" opacity="0.7"/>
+  <circle cx="140" cy="170" r="6" fill="#FF6600" opacity="0.5"/>
+  <circle cx="170" cy="80" r="4" fill="#FFD700" opacity="0.6"/>
+</svg>

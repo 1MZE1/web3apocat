@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐱💥 apoCATlypse Meow - APOCAT</title>
+    <meta name="description" content="Epic apocalyptic defense game where APOCAT saves the world! Earn apoCATlypse Meow - APOCAT tokens for high scores and achievements.">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ff6b6b;
+            text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+            margin-bottom: 20px;
+        }
+        
+        .game-container {
+            position: relative;
+            display: inline-block;
+        }
+        
+        #gameCanvas {
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #000;
+        }
+
+        .web3-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ff6b6b;
+            font-size: 12px;
+        }
+
+        .connect-wallet-btn {
+            background: #ff6b6b;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .connect-wallet-btn:hover {
+            background: #ff5555;
+        }
+    </style>
+</head>
+<body>
+    <h1>🐱💥 apoCATlypse Meow - APOCAT</h1>
+    
+    <!-- Web3 Status -->
+    <div class="web3-status" id="web3Status">
+        <div>🌐 Web3 Status: <span id="connectionStatus">Checking...</span></div>
+        <div id="walletInfo" style="margin-top: 5px;"></div>
+        <button class="connect-wallet-btn" id="connectWalletBtn" onclick="connectWallet()">
+            Connect Wallet
+        </button>
+    </div>
+
+    <div class="game-container">
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
+    </div>
+    
+    <!-- Chat System -->
+    <div id="chatContainer" style="
+        width: 800px;
+        height: 200px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid #ff6600;
+        border-radius: 10px;
+        margin-top: 20px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+    ">
+        <div style="color: #ff6600; font-weight: bold; margin-bottom: 10px; text-align: center;">
+            🗨️ APOCAT Community Chat 🗨️
+        </div>
+        <div id="chatMessages" style="
+            flex: 1;
+            overflow-y: auto;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            margin-bottom: 10px;
+            padding: 5px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+        "></div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="chatInput" placeholder="Type your message..." style="
+                flex: 1;
+                padding: 8px;
+                border: 1px solid #ff6600;
+                border-radius: 5px;
+                background: rgba(0, 0, 0, 0.7);
+                color: #fff;
+                font-size: 14px;
+            " maxlength="100">
+            <button id="chatSend" style="
+                padding: 8px 16px;
+                background: #ff6600;
+                color: #fff;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: bold;
+            ">Send</button>
+        </div>
+    </div>
+
+    <!-- Load complete game from main file -->
+    <script>
+        // For deployment, we'll copy the complete game code here
+        // For now, let's load it from the main file
+        fetch('../apocat-complete.html')
+            .then(response => response.text())
+            .then(html => {
+                // Extract and execute the JavaScript from the complete game
+                const scriptMatch = html.match(/<script>([\s\S]*?)<\/script>/);
+                if (scriptMatch) {
+                    eval(scriptMatch[1]);
+                }
+            })
+            .catch(() => {
+                // Fallback message
+                document.body.innerHTML = '<h1>🐱 APOCAT Game Loading...</h1><p>Please ensure all files are properly deployed.</p>';
+            });
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+  "name": "apocat-game",
+  "version": "1.0.0",
+  "description": "Epic apocalyptic defense game where APOCAT saves the world! Earn APOCAT MEOW tokens for high scores and achievements.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server . -p 8080 -o",
+    "dev": "npx live-server --port=8080 --open=/",
+    "build": "echo 'No build process needed - static files ready for deployment'",
+    "deploy": "echo 'Upload files to your web server or hosting platform'"
+  },
+  "keywords": [
+    "game",
+    "web3",
+    "blockchain",
+    "tokens",
+    "apocat",
+    "apocalyptic",
+    "defense",
+    "canvas",
+    "html5"
+  ],
+  "author": "APOCAT Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/apocat/apocat-game.git"
+  },
+  "bugs": {
+    "url": "https://github.com/apocat/apocat-game/issues"
+  },
+  "homepage": "https://apocat.game",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
