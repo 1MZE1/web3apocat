@@ -319,19 +319,42 @@ class ApocatDistributionBot {
     async handleRewardRequest(req, res) {
         try {
             const { walletAddress, rewardType, amount, description } = req.body;
-            
+
             if (!walletAddress || !rewardType || !amount) {
                 return res.status(400).json({ error: 'Missing required parameters' });
             }
-            
+
             await this.addPendingReward(walletAddress, rewardType, amount, description);
-            
-            res.json({ 
-                success: true, 
-                message: `Reward of ${amount} APOCAT added for ${walletAddress.slice(0, 6)}...` 
+
+            res.json({
+                success: true,
+                message: `Reward of ${amount} APOCAT added for ${walletAddress.slice(0, 6)}...`
             });
         } catch (error) {
             console.error('❌ Error handling reward request:', error);
+            res.status(500).json({ error: 'Internal server error' });
+        }
+    }
+
+    async handleCollectionRequest(req, res) {
+        try {
+            const { walletAddress, amount, description } = req.body;
+
+            if (!walletAddress || !amount) {
+                return res.status(400).json({ error: 'Missing required parameters' });
+            }
+
+            console.log(`🎁 Manual collection request: ${amount} APOCAT for ${walletAddress.slice(0, 6)}...`);
+
+            // Add as a special collection reward
+            await this.addPendingReward(walletAddress, 'manual_collection', amount, description || 'Manual collection');
+
+            res.json({
+                success: true,
+                message: `Collection of ${amount} APOCAT initiated for ${walletAddress.slice(0, 6)}...`
+            });
+        } catch (error) {
+            console.error('❌ Error handling collection request:', error);
             res.status(500).json({ error: 'Internal server error' });
         }
     }
@@ -344,6 +367,9 @@ class ApocatDistributionBot {
 
         // Reward distribution endpoint
         app.post('/api/reward', (req, res) => this.handleRewardRequest(req, res));
+
+        // Manual collection endpoint
+        app.post('/api/collect', (req, res) => this.handleCollectionRequest(req, res));
 
         // Bot status endpoint
         app.get('/api/status', async (req, res) => {

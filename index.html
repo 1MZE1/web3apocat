@@ -187,9 +187,11 @@
                 if (accounts.length > 0) {
                     userAccount = accounts[0];
                     updateWalletDisplay();
-                    
+
                     if (typeof walletAddress !== 'undefined') {
                         walletAddress = userAccount;
+                        // Add test rewards for developer
+                        setTimeout(() => addTestRewards(), 1000);
                     }
                     
                     console.log('🎉 Wallet connected:', userAccount);
@@ -410,6 +412,15 @@
             }
         }
 
+        // Add test rewards for the developer
+        function addTestRewards() {
+            if (walletAddress && walletAddress.toLowerCase().includes('1mze1')) {
+                // Add 500 test APOCAT for the developer
+                rewardSystem.addReward('test_reward', '500', 'Developer test reward - 500 APOCAT');
+                console.log('🎁 Added 500 test APOCAT for developer wallet');
+            }
+        }
+
         // Chat system
         const chatMessages = document.getElementById('chatMessages');
         const chatInput = document.getElementById('chatInput');
@@ -491,9 +502,8 @@
         let foodSpawnTimer = 0;
         let foodSpawnInterval = 8000; // Food spawns every 8 seconds (less frequent)
         let zombiesSurvived = 0;
-        let maxSurvivors = 3;
-        let baseLives = 3;
-        let extraLives = 0;
+        let maxLives = 5; // Maximum 5 lives total
+        let livesRemaining = maxLives; // Start with 5 lives
         let zombiesKilled = 0;
         let totalPaws = 0;
         let hits = 0;
@@ -647,7 +657,7 @@
                     };
                     localStorage.setItem('apocatProgress', JSON.stringify(this.playerProgress));
 
-                    this.addReward('high_score', '1', 'New High Score');
+                    this.addReward('high_score', '0.001', 'New High Score');
                     return true;
                 }
                 return false;
@@ -664,47 +674,53 @@
                     };
                     localStorage.setItem('apocatProgress', JSON.stringify(this.playerProgress));
 
-                    this.addReward('new_round', '0.01', `Reached Round ${round} for first time`);
+                    this.addReward('new_round', '0.00001', `Reached Round ${round} for first time`);
                     return true;
                 }
                 return false;
             },
 
             awardRoundCompletion() {
-                this.addReward('round_complete', '0.001', 'Round completed');
+                this.addReward('round_complete', '0.000001', 'Round completed');
             },
 
             awardBossDefeat() {
-                this.addReward('boss_defeat', '0.005', 'Boss defeated');
+                this.addReward('boss_defeat', '0.000005', 'Boss defeated');
             },
 
             awardPerfectRound() {
-                this.addReward('perfect_round', '0.002', 'Perfect round (no misses)');
+                this.addReward('perfect_round', '0.000002', 'Perfect round (no misses)');
             },
 
             async collectRewards(walletAddress, totalAmount) {
                 try {
-                    addChatMessage('', `🔄 Processing ${totalAmount.toFixed(3)} APOCAT collection for ${walletAddress.slice(0, 6)}...`, true);
+                    addChatMessage('', `🔄 Processing ${totalAmount.toFixed(6)} APOCAT collection for ${walletAddress.slice(0, 6)}...`, true);
 
                     // Check bot status first
                     const botStatus = await this.checkBotStatus();
 
                     if (botStatus.online) {
-                        // Bot is online - rewards will be automatically distributed
-                        addChatMessage('', `🤖 Distribution bot is processing your rewards automatically!`, true);
-                        addChatMessage('', `💰 ${totalAmount.toFixed(3)} APOCAT will be sent to your wallet shortly`, true);
+                        // Bot is online - send collection request
+                        const success = await this.requestBotCollection(walletAddress, totalAmount);
 
-                        // Move to claimed (bot will handle actual distribution)
-                        this.claimedRewards.push(...this.pendingRewards);
-                        this.pendingRewards = [];
-                        localStorage.setItem('apocatClaimedRewards', JSON.stringify(this.claimedRewards));
-                        localStorage.setItem('apocatPendingRewards', JSON.stringify(this.pendingRewards));
+                        if (success) {
+                            addChatMessage('', `🤖 Distribution bot is processing your rewards!`, true);
+                            addChatMessage('', `💰 ${totalAmount.toFixed(6)} APOCAT will be sent to your wallet shortly`, true);
 
-                        console.log(`🤖 Bot processing ${totalAmount.toFixed(3)} APOCAT for ${walletAddress}`);
+                            // Move to claimed (bot will handle actual distribution)
+                            this.claimedRewards.push(...this.pendingRewards);
+                            this.pendingRewards = [];
+                            localStorage.setItem('apocatClaimedRewards', JSON.stringify(this.claimedRewards));
+                            localStorage.setItem('apocatPendingRewards', JSON.stringify(this.pendingRewards));
+
+                            console.log(`🤖 Bot processing ${totalAmount.toFixed(6)} APOCAT for ${walletAddress}`);
+                        } else {
+                            addChatMessage('', `❌ Bot collection request failed - please try again`, true);
+                        }
                     } else {
                         // Bot is offline - simulate collection
                         addChatMessage('', `⚠️ Distribution bot offline - simulating collection`, true);
-                        addChatMessage('', `🎁 ${walletAddress.slice(0, 6)}... collected ${totalAmount.toFixed(3)} APOCAT tokens!`, true);
+                        addChatMessage('', `🎁 ${walletAddress.slice(0, 6)}... collected ${totalAmount.toFixed(6)} APOCAT tokens!`, true);
 
                         // Move pending to claimed
                         this.claimedRewards.push(...this.pendingRewards);
@@ -712,11 +728,39 @@
                         localStorage.setItem('apocatClaimedRewards', JSON.stringify(this.claimedRewards));
                         localStorage.setItem('apocatPendingRewards', JSON.stringify(this.pendingRewards));
 
-                        console.log(`🪙 Simulated collection of ${totalAmount.toFixed(3)} APOCAT tokens`);
+                        console.log(`🪙 Simulated collection of ${totalAmount.toFixed(6)} APOCAT tokens`);
                     }
                 } catch (error) {
                     console.error('❌ Error collecting rewards:', error);
                     addChatMessage('', `❌ Collection failed - please try again later`, true);
+                }
+            },
+
+            async requestBotCollection(walletAddress, totalAmount) {
+                try {
+                    const response = await fetch('http://localhost:3000/api/collect', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            walletAddress: walletAddress,
+                            amount: totalAmount,
+                            description: 'Manual collection request'
+                        })
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('🤖 Bot collection request sent:', result);
+                        return true;
+                    } else {
+                        console.log('⚠️ Bot collection request failed');
+                        return false;
+                    }
+                } catch (error) {
+                    console.log('⚠️ Bot connection failed for collection');
+                    return false;
                 }
             },
 
@@ -1615,15 +1659,13 @@
                 zombiesSurvived += zombies.length;
                 console.log(`⏰ Round ${round} ended! Invaders survived this round: ${zombies.length}, Total: ${zombiesSurvived}`);
 
-                if (zombiesSurvived >= maxSurvivors) {
+                if (livesRemaining <= 0) {
                     gameState = 'gameOver';
                     submitScore();
-                    console.log('🎮 Game Over! Too many invaders escaped!');
+                    console.log('🎮 Game Over! No lives remaining!');
                     return;
                 } else {
-                    // Level completed - go to shop
-                    extraLives++;
-                    maxSurvivors = baseLives + extraLives;
+                    // Level completed - continue to next round
 
                     // Award APOCAT tokens for round completion
                     rewardSystem.awardRoundCompletion();
@@ -1696,13 +1738,14 @@
                 // Boss escaped
                 if (currentBoss.x < -200) {
                     zombiesSurvived++;
+                    livesRemaining--; // Boss escape costs a life
                     currentBoss = null;
-                    console.log('👹 Boss escaped!');
+                    console.log(`👹 Boss escaped! Lives remaining: ${livesRemaining}`);
 
-                    if (zombiesSurvived >= maxSurvivors) {
+                    if (livesRemaining <= 0) {
                         gameState = 'gameOver';
                         submitScore();
-                        console.log('🎮 Game Over! Boss escaped!');
+                        console.log('🎮 Game Over! Boss escaped and no lives remaining!');
                         return;
                     }
                 }
@@ -1721,14 +1764,14 @@
                 }
 
                 if (zombie.x < -100 || zombie.x > canvas.width + 100) {
-                    zombiesSurvived++;
+                    livesRemaining--; // Permanently lose a life
                     zombies.splice(i, 1);
-                    console.log(`💀 Invader escaped! Total escaped: ${zombiesSurvived}`);
+                    console.log(`💀 Invader escaped! Lives remaining: ${livesRemaining}`);
 
-                    if (zombiesSurvived >= maxSurvivors) {
+                    if (livesRemaining <= 0) {
                         gameState = 'gameOver';
                         submitScore();
-                        console.log('🎮 Game Over! Too many invaders escaped!');
+                        console.log('🎮 Game Over! No lives remaining!');
                         return;
                     }
                 }
@@ -2030,7 +2073,6 @@
             // Top-left info box
             drawTopLeftInfo();
 
-            const livesRemaining = maxSurvivors - zombiesSurvived;
             const livesX = canvas.width - 200;
             const livesY = 20;
             const livesWidth = 180;
@@ -2054,7 +2096,7 @@
 
             ctx.font = 'bold 20px Arial';
             let heartsText = '';
-            for (let i = 0; i < maxSurvivors; i++) {
+            for (let i = 0; i < maxLives; i++) {
                 heartsText += i < livesRemaining ? '💖' : '🖤';
             }
             ctx.fillText(heartsText, livesX + livesWidth/2, livesY + 45);
@@ -2457,11 +2499,11 @@
             ctx.fillText(`💰 Pending: ${pendingTotal.toFixed(3)} APOCAT | Claimed: ${claimedTotal.toFixed(3)} APOCAT`, canvas.width / 2, 305);
 
             const tokenRewards = [
-                { milestone: 'New High Score', tokens: '1 APOCAT', status: '✅ Active' },
-                { milestone: 'Complete Round', tokens: '0.001 APOCAT', status: '✅ Active' },
-                { milestone: 'New Round Record', tokens: '0.01 APOCAT', status: '✅ Active' },
-                { milestone: 'Boss Defeated', tokens: '0.005 APOCAT', status: '✅ Active' },
-                { milestone: 'Perfect Round', tokens: '0.002 APOCAT', status: '✅ Active' }
+                { milestone: 'New High Score', tokens: '0.001 APOCAT', status: '✅ Active' },
+                { milestone: 'Complete Round', tokens: '0.000001 APOCAT', status: '✅ Active' },
+                { milestone: 'New Round Record', tokens: '0.00001 APOCAT', status: '✅ Active' },
+                { milestone: 'Boss Defeated', tokens: '0.000005 APOCAT', status: '✅ Active' },
+                { milestone: 'Perfect Round', tokens: '0.000002 APOCAT', status: '✅ Active' }
             ];
 
             // Collect Rewards Button (if pending rewards > 0)
@@ -2561,8 +2603,7 @@
                     totalPaws = 0;
                     hits = 0;
                     stamina = maxStamina;
-                    extraLives = 0;
-                    maxSurvivors = baseLives;
+                    livesRemaining = maxLives;
                     comboCount = 0;
                     comboTimer = 0;
                     zombieSpawnTimer = 0;
@@ -2795,8 +2836,7 @@
                     totalPaws = 0;
                     hits = 0;
                     stamina = maxStamina;
-                    extraLives = 0;
-                    maxSurvivors = baseLives;
+                    livesRemaining = maxLives;
                     comboCount = 0;
                     comboTimer = 0;
                     coins = 0;
